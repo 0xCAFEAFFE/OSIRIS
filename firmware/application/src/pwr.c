@@ -89,7 +89,7 @@ void PWR_SleepMode(void)
 void PWR_Shutdown(void)
 {
 	// wait until shutdown message sent
-	UART_Printf("Shutdown..");
+	UART_Printf("Shutdown..\n");
 	while (UART_TxBusy());
 
 	// disable LCD

@@ -54,12 +54,12 @@ static const __flash char helpStr[NUM_HELP_STRS][HELP_STR_LEN] =
 	"m - switch view mode",
 	"n - random number generator",
 	"r - current dose rate",
-	"s - system shutdown",
+	"s - shutdown",
 	"t - system time",
 	"u - UART calibration",
 	"v - measure voltages",
 	"x - EEPROM address",
-	"z - system reset",
+	"z - reset",
 };
 
 // check if supplied string contains a valid command
@@ -227,7 +227,14 @@ void CMD_Parse(char* str)
 			
 			break;
 		}
-				
+			
+		// ---------- shutdown ----------
+		case 's':
+		{
+			PWR_Shutdown();
+			break;
+		}
+
 		// ---------- system time ----------
 		case 't':
 		{
@@ -325,16 +332,9 @@ void CMD_Parse(char* str)
 		}
 
 		// ---------- reset ----------
-		case 'y':
-		{
-			PWR_Reset();
-			break;
-		}
-		
-		// ---------- shutdown ----------
 		case 'z':
 		{
-			PWR_Shutdown();
+			PWR_Reset();
 			break;
 		}
 
