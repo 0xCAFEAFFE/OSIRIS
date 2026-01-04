@@ -10,7 +10,7 @@
 
 #include "uart.h"
 //---------------
-#include "..\shared\boot.h"
+#include "../../shared/boot.h"
 #include "gpio.h"
 #include "rtc.h"
 
