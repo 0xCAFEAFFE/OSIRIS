@@ -166,10 +166,24 @@ void RAD_EngineTick(void)
 	ProcessData();
 	
 	// log radiation data to UART
-	if (RAD_uartLogInterval && !(RTC_GetSecTime() % RAD_uartLogInterval))
+	static bool log_head = false;
+	if (RAD_uartLogInterval)
 	{
-		UART_Printf("%02u:%02u:%02u ", time.hours, time.mins, time.secs);
-		UART_Printf("%.3fuSv/h %.4fuSv\n", (double)doseRate, (double)RAD_totalDose);
+		if (!log_head)
+		{
+			UART_Printf("Time     Rate       Total\n");
+			log_head = true;
+		}
+		
+		if (!(RTC_GetSecTime() % RAD_uartLogInterval))
+		{
+			UART_Printf("%02u:%02u:%02u ", time.hours, time.mins, time.secs);
+			UART_Printf("%.3fuSv/h %.4fuSv\n", (double)doseRate, (double)RAD_totalDose);
+		}
+	}
+	else
+	{
+		log_head = false;
 	}
 }
 
