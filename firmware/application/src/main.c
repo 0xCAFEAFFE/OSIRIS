@@ -145,7 +145,7 @@ static bool InitSystem(void)
 		bool ok = UART_Calibrate(true);
 		
 		LCD_Printf(2, ok?"OK!":"ERROR!");
-		_delay_ms(1000); // make it readable
+		_delay_ms(1000); // keep message visible for a while
 	}
 	
 	// initialize ADC

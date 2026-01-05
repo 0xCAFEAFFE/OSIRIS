@@ -28,7 +28,7 @@
 #define RAD_CONV_FACTOR		215.0f
 
 // externally visible variables
-const float RAD_filterLvls[RAD_FILTER_LVL_NUM] = {0.2f, 0.1f, 0.05f}; // exponential smoothing coefficients
+const float RAD_filterLvls[RAD_FILTER_LVL_NUM] = {0.2f, 0.05f, 0.02f}; // exponential smoothing coefficients
 float RAD_filterFactor;
 float RAD_totalDose;
 uint16_t RAD_uartLogInterval;
