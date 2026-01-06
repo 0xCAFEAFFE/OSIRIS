@@ -35,31 +35,31 @@ typedef enum
 // define help text
 // unused letters: gijopqwy
 #define NUM_HELP_STRS	20u
-#define HELP_STR_LEN	32u
+#define HELP_STR_LEN	24u
 // note: format specifier %S (uppercase!) must be used to printf strings from flash
 static const __flash char helpStr[NUM_HELP_STRS][HELP_STR_LEN] =
 {
-//  "1234567890123456789012345678901" - longest possible string with 31+'\0'=32 chars
+//  "12345678901234567890123" - longest possible string: 23 chars + '\0' = 24 
 	"cmd format: x -> get x",
-	"x1 -> set x=1; available cmds:",
-	"a - dose rate alarm level",
-	"b - emit beep",
+	"x1 -> set x=1. cmds:",
+	"a - alarm level",
+	"b - beep emit",
 	"c - clicker setting",
-	"d - total accumulated dose",
-	"e - r/w EEPROM at addr X",
-	"f - dose rate filter factor",
-	"h - high voltage supply test",
+	"d - dose total",
+	"e - EEPROM r/w @ X",
+	"f - filter factor",
+	"h - high voltage",
 	"k - key debugging",
-	"l - data logging interval",
-	"m - switch view mode",
-	"n - random number generator",
-	"r - current dose rate",
+	"l - logging interval",
+	"m - mode view",
+	"n - number random",
+	"r - rate dose",
 	"s - shutdown",
-	"t - system time",
+	"t - time",
 	"u - UART calibration",
-	"v - measure voltages",
+	"v - voltage measure",
 	"x - EEPROM address",
-	"z - reset",
+	"z - reset system",
 };
 
 // check if supplied string contains a valid command
