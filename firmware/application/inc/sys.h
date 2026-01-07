@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <util/delay.h>
 #include <util/atomic.h>
 #include <avr/io.h>
