@@ -31,10 +31,6 @@
 #define SYS_ASSERT_LVL	1u	// assert handling strategy: 0=off, 1=warn, 2=reset
 #define SYS_EXCEPTION() SYS_Assert(false)
 
-// revision defines
-#define HW_REV	"2.0"
-#define FW_REV	"2.1"
-
 // logic defines
 #define IN	false
 #define OUT true
