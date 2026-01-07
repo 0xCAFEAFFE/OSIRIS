@@ -50,7 +50,7 @@ bool ADC_Init(void)
 	
 	// check reference voltage
 	uint16_t vsys = ADC_GetVsys();
-	return (abs(vsys - (uint16_t)ADC_V_REF) < ADC_VREF_ERR);
+	return ((uint16_t)abs(vsys - ADC_V_REF) < ADC_VREF_ERR);
 }
 
 // measure system voltage in mV
