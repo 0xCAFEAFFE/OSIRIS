@@ -1,2 +1,5 @@
 firmware/mcp studio/OSIRIS_FW/Debug/
 firmware/mcp studio/.vs/
+firmware/application/OSIRIS_FW.elf
+firmware/application/OSIRIS_FW.map
+firmware/application/build/
