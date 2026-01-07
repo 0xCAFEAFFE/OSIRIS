@@ -882,7 +882,7 @@ int main(void) {
 
 #warning "lots of optiboot settings won't work because 0xCAFEAFFE is lazy"
 
-#include "../../shared/boot.h"
+#include "../../shared/defs.h"
 
 // if VUSB low -> reset via WDG timeout
 if(!(BOOT_VUSB_PORT & _BV(BOOT_VUSB_PIN)))
