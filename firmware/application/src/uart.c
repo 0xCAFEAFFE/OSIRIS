@@ -97,15 +97,10 @@ bool UART_RxString(char* buffer)
 	// handle out-of-sync condition
 	if (rxFrameError)
 	{
-		// disabled RX & clear flag
+		// disabled RX & clear helper flag
 		CLR(UCSR0B, RXEN0);
 		rxFrameError = false;
 
-		// invalidate UBRR value in EEPROM to force re-calibration on next boot
-		// assuming wrong UBRR setting caused the frame error
-		while (!eeprom_is_ready());
-		eeprom_write_byte(BOOT_UBRR_EEP_ADDR, 0x00);
-				
 		// flush buffer & re-enable RX
 		rxBufIn = rxBufOut = 0;
 		SET(UCSR0B, RXEN0);
