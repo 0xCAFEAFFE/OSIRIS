@@ -61,9 +61,10 @@ The application was developed using [Microchip Studio](https://www.microchip.com
 
 If you prefer to build manually and/or with a more recent compiler version, then I suggest downloading this [release by ZakKemble](https://github.com/ZakKemble/avr-gcc-build/releases/tag/v15.1.0-1), which uses the same versions of `avr-gcc v15.1.0`, `binutils v2.44` and `avr-libc v2.2.1` as the latest toolchain [release by Microchip](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio/gcc-compilers), but also includes matching version of `make` and `avrdude` for Windows. The Makefile was only tested on Windows but *should* work for Linux as well.
 
-The bootloader was compiled using `avr-gcc v15.1.0` as well, resulting in a 512 byte binary which *barely* fits the boot section size, the binary was smaller with the older `avr-gcc v5.4.0`, future compiler versions might produce a too large binary.
+The bootloader was compiled using `avr-gcc v15.1.0` as well, resulting in a 510 byte binary which *barely* fits the boot section size of 512 bytes. The binary was smaller with the older `avr-gcc v5.4.0`, future compiler versions might produce a binary too large to fit.
 
 While flashing the bootloader, USB must be connected to provide power to the system.
+Fuse settings: Low =0xE2, High =0xD6, Extended =0xFF.
 
 ### Disclaimer 
 

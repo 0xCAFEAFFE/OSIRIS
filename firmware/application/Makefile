@@ -104,7 +104,6 @@ all: $(HEX_FILE)
 	$(ECHO_BLANK)
 	@echo Build complete!
 	$(ECHO_BLANK)
-	@avr-size $(ELF_FILE)
 	@avr-objdump -Pmem-usage $(ELF_FILE)
 
 # Create build directory if it doesn't exist
