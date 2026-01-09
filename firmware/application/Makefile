@@ -1,10 +1,33 @@
 ################################################################################
-# OSIRIS Makefile
+# Cross-Platform Makefile for OSIRIS
 ################################################################################
 
-# Shell and tools
-SHELL := cmd.exe
-RM := del /Q
+# Detect OS
+ifeq ($(OS),Windows_NT)
+    DETECTED_OS := Windows
+else
+    DETECTED_OS := $(shell uname -s)
+endif
+
+# Platform-specific settings
+ifeq ($(DETECTED_OS),Windows)
+    SHELL := cmd.exe
+    RM := del /Q
+    RMDIR := rmdir /S /Q
+    MKDIR := mkdir
+    PATHSEP := \\
+    DEVNULL := 2>nul
+    FIXPATH = $(subst /,\,$1)
+    ECHO_BLANK := @echo.
+else
+    RM := rm -f
+    RMDIR := rm -rf
+    MKDIR := mkdir -p
+    PATHSEP := /
+    DEVNULL := 2>/dev/null
+    FIXPATH = $1
+    ECHO_BLANK := @echo
+endif
 
 # Project name
 PROJECT := OSIRIS_FW
@@ -39,12 +62,13 @@ HEX_FILE := $(PROJECT).hex
 MAP_FILE := $(PROJECT).map
 
 # Compiler flags
-AVR_GCC_CFLAGS := \
+CFLAGS := \
 	-x c \
 	-funsigned-char \
 	-funsigned-bitfields \
-	-I"../shared" \
-	-I"./$(INC_DIR)" \
+	-DDEBUG \
+	-I../shared \
+	-I./$(INC_DIR) \
 	-Os \
 	-Wall -Wextra -Wshadow \
 	-Wdouble-promotion \
@@ -63,7 +87,7 @@ AVR_GCC_CFLAGS := \
 
 # Linker flags
 LDFLAGS := \
-	-Wl,-Map="$(MAP_FILE)" \
+	-Wl,-Map=$(MAP_FILE) \
 	-Wl,--start-group -Wl,-lm -Wl,--end-group \
 	-Wl,--gc-sections \
 	-mmcu=atmega328pb \
@@ -76,48 +100,55 @@ LDFLAGS := \
 ################################################################################
 
 # Default target
-all: $(HEX_FILE) size
+all: $(HEX_FILE)
+	$(ECHO_BLANK)
+	@echo Build complete!
+	$(ECHO_BLANK)
+	@avr-size $(ELF_FILE)
+	@avr-objdump -Pmem-usage $(ELF_FILE)
 
 # Create build directory if it doesn't exist
 $(BUILD_DIR):
-	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+ifeq ($(DETECTED_OS),Windows)
+	@if not exist $(call FIXPATH,$(BUILD_DIR)) $(MKDIR) $(call FIXPATH,$(BUILD_DIR))
+else
+	@$(MKDIR) $(BUILD_DIR)
+endif
 
-# Pattern rule: compile .c files to .o files in build directory
+# Pattern rule: compile .c files to .o files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
-	@echo.
-	@echo Building file: $<
-	avr-gcc $(AVR_GCC_CFLAGS) -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	@echo Building: $<
+	@avr-gcc $(CFLAGS) -MF $(call FIXPATH,$(@:%.o=%.d)) -MT $(call FIXPATH,$@) -o $(call FIXPATH,$@) $(call FIXPATH,$<)
 
 # Link object files to create ELF
 $(ELF_FILE): $(OBJS)
-	@echo.
-	@echo Linking target: $@
-	avr-gcc -o $@ $(OBJS) $(LDFLAGS)
+	@echo Linking: $@
+	@avr-gcc -o $@ $(OBJS) $(LDFLAGS)
 
 # Convert ELF to HEX
 $(HEX_FILE): $(ELF_FILE)
-	@echo.
-	@echo Creating HEX file: $@
-	avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "$<" "$@"
+	@echo Creating: $@
+	@avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures $< $@
 
-# Display size information
-size: $(ELF_FILE)
-	@echo.
-	@echo Size information:
-	avr-size "$(ELF_FILE)"
-	avr-objdump -Pmem-usage "$(ELF_FILE)"
-
-# Include dependency files
+# Include dependency files (automatic header dependency tracking)
 -include $(DEPS)
 
 # Clean build artifacts
 clean:
-	@echo.
-	@echo Cleaning build artifacts...
-	-if exist $(BUILD_DIR) $(RM) $(BUILD_DIR)\*.o $(BUILD_DIR)\*.d
-	-if exist $(BUILD_DIR) rmdir $(BUILD_DIR)
-	-$(RM) $(ELF_FILE) $(HEX_FILE) $(MAP_FILE) 2>nul
-	@echo.
+	@echo Cleaning...
+ifeq ($(DETECTED_OS),Windows)
+	@if exist $(call FIXPATH,$(BUILD_DIR))\*.o $(RM) $(call FIXPATH,$(BUILD_DIR)\*.o) $(DEVNULL)
+	@if exist $(call FIXPATH,$(BUILD_DIR))\*.d $(RM) $(call FIXPATH,$(BUILD_DIR)\*.d) $(DEVNULL)
+	@if exist $(call FIXPATH,$(BUILD_DIR)) $(RMDIR) $(call FIXPATH,$(BUILD_DIR)) $(DEVNULL)
+	@$(RM) $(ELF_FILE) $(HEX_FILE) $(MAP_FILE) $(DEVNULL)
+	@$(RM) $(PROJECT).a $(PROJECT).eep $(PROJECT).lss $(PROJECT).srec $(PROJECT).usersignatures $(DEVNULL)
+else
+	@$(RM) $(BUILD_DIR)/*.o $(BUILD_DIR)/*.d $(DEVNULL)
+	@$(RMDIR) $(BUILD_DIR) $(DEVNULL)
+	@$(RM) $(ELF_FILE) $(HEX_FILE) $(MAP_FILE) $(DEVNULL)
+	@$(RM) $(PROJECT).a $(PROJECT).eep $(PROJECT).lss $(PROJECT).srec $(PROJECT).usersignatures $(DEVNULL)
+endif
+	@echo Clean complete.
 
 # Phony targets
-.PHONY: all clean size
+.PHONY: all clean
