@@ -30,12 +30,12 @@
 // externally visible variables
 const float RAD_filterLvls[RAD_FILTER_LVL_NUM] = {0.2f, 0.05f, 0.02f}; // exponential smoothing coefficients
 float RAD_filterFactor;
-float RAD_totalDose;
 uint16_t RAD_uartLogInterval;
 
 // internal variables
 static volatile uint16_t hvCounts;	// incremented in PCINT1 ISR
 static volatile uint16_t rawCounts;	// incremented INT1 ISR
+static uint64_t totalCounts;		// max: 1.43GSv - should be sufficient for a while
 static uint16_t countBuffer;
 static float doseRate;
 static bool radFault;
@@ -48,8 +48,12 @@ bool RAD_Init(void)
 {
 	// reset public variables
 	RAD_filterFactor = RAD_filterLvls[0]; // start with fast filter
-	RAD_totalDose = 0;
 	RAD_uartLogInterval = 0;
+	
+	// read total counts from EEPROM
+	while (!eeprom_is_ready());
+	float dose = eeprom_read_float((const float*)RAD_DOSE_EEP_ADDR);
+	RAD_SetTotalDose(dose);
 	
 	// enable & check high voltage power supply
 	GPIO_SetPin(PIN_HV_EN, true);
@@ -178,7 +182,7 @@ void RAD_EngineTick(void)
 		if (!(RTC_GetSecTime() % RAD_uartLogInterval))
 		{
 			UART_Printf("%02u:%02u:%02u ", time.hours, time.mins, time.secs);
-			UART_Printf("%.3fuSv/h %.4fuSv\n", (double)doseRate, (double)RAD_totalDose);
+			UART_Printf("%.3fuSv/h %.4fuSv\n", (double)doseRate, (double)RAD_GetTotalDose());
 		}
 	}
 	else
@@ -217,8 +221,6 @@ static void ProcessData(void)
 	// static local vars
 	static uint16_t buffer_old;
 	static float cpm_smooth;
-	// integer must be used here since adding small values to a large float does not work
-	static uint64_t total_counts; // max: 1.43GSv - should be sufficient for a while
 	
 	// dose rate calculation - handle intermediate buffer
 	uint16_t cps = countBuffer - buffer_old;
@@ -233,9 +235,28 @@ static void ProcessData(void)
 	// CPM to dose rate conversion
 	doseRate = cpm_smooth / RAD_CONV_FACTOR;
 	
-	// total dose calculation
-	total_counts += (uint64_t)roundf(cps_corr);
-	RAD_totalDose = total_counts / (60.0f*RAD_CONV_FACTOR);
+	// total dose calculation - use int to avoid float rounding errors
+	totalCounts += (uint64_t)roundf(cps_corr);
+}
+
+// set total accumulated dose value
+void RAD_SetTotalDose(float dose)
+{
+	totalCounts = (dose * 60.0f * RAD_CONV_FACTOR);
+}
+
+// get total accumulated dose rate
+float RAD_GetTotalDose(void)
+{
+	return totalCounts / (60.0f * RAD_CONV_FACTOR);
+}
+
+// save total accumulated dose to EEPROM
+void RAD_SaveTotalDose(void)
+{
+	float dose = RAD_GetTotalDose();
+	while (!eeprom_is_ready());
+	eeprom_update_float((float*)RAD_DOSE_EEP_ADDR, dose);
 }
 
 // INT1 external interrupt ISR (GM tube pulse event)

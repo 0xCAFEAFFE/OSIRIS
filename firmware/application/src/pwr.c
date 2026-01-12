@@ -100,6 +100,9 @@ void PWR_Shutdown(void)
 	GPIO_SetPin(PIN_BEEP_EN, false);
 	GPIO_SetPin(PIN_CLICK_EN, false);
 	GPIO_SetPin(PIN_VREG_EN, false);
+	
+	// save total accumulated dose to EEPROM
+	RAD_SaveTotalDose();
 
 	// disable watchdog
 	wdt_reset();

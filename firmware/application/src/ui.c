@@ -63,21 +63,28 @@ void UI_HandleKeys(byte key)
 		}
 		case KEY_GRN_LONG:
 		{
-			// cycle through dose rate filter setting
+			// function of long green key press is dependend on current mode
 			switch (UI_viewMode)
 			{
 				case UI_VIEW_DOSE_RATE:
 				{
+					// cycle through dose rate filter setting
 					if (++filterLevel >= RAD_FILTER_LVL_NUM) { filterLevel = 0; }
 					RAD_filterFactor = RAD_filterLvls[filterLevel];
 					break;
 				}
-				// cycle through alarm levels
 				case UI_VIEW_ALARM:
 				{
+					// cycle through alarm levels
 					static byte a;
 					if (++a >= UI_ALARM_LVL_NUM) { a = 0; }
 					UI_alarmLevel = UI_alarmLvls[a];
+					break;
+				}
+				case UI_VIEW_TOTAL_DOSE:
+				{
+					// reset total accumulated dose
+					RAD_SetTotalDose(0.0f);
 					break;
 				}
 				default: { break; }
@@ -249,7 +256,7 @@ void UI_RenderLcd(void)
 			else if (rate < 100.0f)	 { LCD_Printf(2, "%.2fuSv/h",(double)rate); }
 			else if (rate < 1000.0f) { LCD_Printf(2, "%.1fuSv/h",(double)rate); }
 			else /* >1000 */		 { LCD_Printf(2, "%.2fmSv/h",(double)rate/1000); }
-			
+#warning "maybe we can just overwrite the latest digits with blank spaces?"
 			// display alarm status
 			LCD_Position(2, 11);
 			if (alarmEn) { LCD_Printf(0, " !!!"); }
@@ -259,7 +266,7 @@ void UI_RenderLcd(void)
 		case UI_VIEW_TOTAL_DOSE: // total dose
 		{
 			LCD_Printf(1, "Total Dose:");
-			float dose = RAD_totalDose;
+			float dose = RAD_GetTotalDose();
 			
 			if (dose < 10.0f)		 { LCD_Printf(2, "%.3fuSv",(double)dose); }
 			else if (dose < 100.0f)	 { LCD_Printf(2, "%.2fuSv",(double)dose); }

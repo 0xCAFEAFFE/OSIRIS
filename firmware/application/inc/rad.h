@@ -13,12 +13,13 @@
 
 #include "sys.h"
 
+#define RAD_DOSE_EEP_ADDR	0x01	// address in EEPROM where total dose rate is stored
+
 // externally visible variables
 #define RAD_FILTER_LVL_NUM	3u
 extern const float RAD_filterLvls[RAD_FILTER_LVL_NUM];
 extern float RAD_filterFactor;
 extern uint16_t RAD_uartLogInterval;
-extern float RAD_totalDose;
 
 // public function declarations
 bool RAD_Init(void);
@@ -28,6 +29,9 @@ bool RAD_GetFault(void);
 void RAD_EngineTick(void);
 void RAD_UpdateBuffer(void);
 float RAD_GetDoseRate(void);
+void RAD_SetTotalDose(float dose);
+float RAD_GetTotalDose(void);
+void RAD_SaveTotalDose(void);
 void RAD_DeInit(void);
 
 #endif /* RAD_H_ */

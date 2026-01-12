@@ -131,8 +131,8 @@ void CMD_Parse(char* str)
 		// ---------- total dose ----------
 		case 'd':
 		{
-			if (set) { RAD_totalDose = arg_float; }
-			else { UART_Printf("%.4fuSv\n", (double)RAD_totalDose); }
+			if (set) { RAD_SetTotalDose(arg_float); }
+			else { UART_Printf("%.4fuSv\n", (double)RAD_GetTotalDose()); }
 			
 			break;
 		}
