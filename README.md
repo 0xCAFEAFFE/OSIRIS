@@ -16,7 +16,7 @@ The STL files for the enclosure are released under *CC BY-NC-SA 4.0* and are ava
 
 ### Firmware Overview
 
-The firmware is written in C and implements a interrupt-driven, modular approach using a super-loop. The MCU spends most time in sleep mode to save power but will be woken up by various interrupts, most importantly the G-M radiation events and the 1s tick interrupt provided by the clock XTAL, which triggers the the calculation of updated radiation measurement values. A simple command parser allows the user to control the device through a serial terminal, independently of the UI. To compensate the relatively poor accuracy of the internal RC oscillator, the UART baud rate setting can be calibrated against the external clock XTAL and stored to EEPROM, a modified version of the OptiBoot bootloader loads that calibrated UART setting, which allows for faster firmware upload, which is especially useful during development.
+The firmware is written in C and implements a interrupt-driven, modular approach using a super-loop. The MCU spends most time in sleep mode to save power but will be woken up by various interrupts, most importantly the G-M radiation events and the 1s tick interrupt provided by the clock XTAL, which triggers the calculation of filtered radiation measurement values. A simple command parser allows the user to control the device through a serial terminal, independently of the UI. To compensate the relatively poor accuracy of the internal RC oscillator, the UART baud rate setting can be calibrated against the external clock XTAL and stored to EEPROM, a modified version of the OptiBoot bootloader loads that calibrated UART setting, which allows for faster firmware upload, which is especially useful during development.
 
 The firmware is released under *GPL v2.0* and available in the `firmware` folder of this repository. It includes a heavily modified version of a [LCD driver library](https://www.lcd-module.de/lcd-tft-beispiel-code-programmierung/application-note/arduino.html), released under *GPL v2.0* as well as a modified version of [OptiBoot](https://github.com/Optiboot/optiboot), released under *GPL v2.0* as well.
 
@@ -29,22 +29,22 @@ Each key has primary functions assigned for short and long key presses:
 | Short | Power on / Mute alarm | Toggle clicker  | Cycle view mode      |
 | Long  | Power off             | Toggle key lock | Cycle mode setting   |
 
-The following view modes can be cycled through by shortly pressing the green key, in some of which the green key can cycle through a setting if pressed long:
+The following view modes can be cycled through by shortly pressing the green key, in some of which the green key has an alternative function if pressed long:
 
-| Mode        | Setting            |  
-|-------------|--------------------|
-| Dose Rate   | Dose Rate Filter   |
-| Total Dose  | -                  |
-| Time        | -                  |
-| Alarm Level | Alarm Level        |
-| Voltages    | -                  |
+| Mode        | Function              |  
+|-------------|-----------------------|
+| Dose Rate   | Change Filter Setting |
+| Total Dose  | Reset Total Dose      |
+| Time        | Reset System Time     |
+| Alarm Level | Set Alarm Level       |
+| Voltages    | -                     |
 
 The LCD symbols on the top right corner, from left to right:
 
  - Keylock enabled
  - Clicker enabled
- -  USB connected
- -  Battery state
+ - USB connected
+ - Battery state
 
 ### Command Parser
 

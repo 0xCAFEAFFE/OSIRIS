@@ -93,7 +93,7 @@ uint32_t RTC_GetUpTime(void)
 // set h:m:s systime
 void RTC_SetSysTime(RTC_Time_t time)
 {	
-	// we can't change rtcUptime directly since total dose calculation relies on that
+	// changing rtcUptime directly would require blocking the IRQ, use an offset instead
 	rtcOffset = CalcSecTime(time) - rtcUptime ;
 }
 

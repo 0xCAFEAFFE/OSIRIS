@@ -87,6 +87,12 @@ void UI_HandleKeys(byte key)
 					RAD_SetTotalDose(0.0f);
 					break;
 				}
+				case UI_VIEW_TIME:
+				{
+					// reset systime
+					RTC_SetSysTime((RTC_Time_t){0});
+					break;
+				}
 				default: { break; }
 			}
 			
@@ -256,7 +262,7 @@ void UI_RenderLcd(void)
 			else if (rate < 100.0f)	 { LCD_Printf(2, "%.2fuSv/h",(double)rate); }
 			else if (rate < 1000.0f) { LCD_Printf(2, "%.1fuSv/h",(double)rate); }
 			else /* >1000 */		 { LCD_Printf(2, "%.2fmSv/h",(double)rate/1000); }
-#warning "maybe we can just overwrite the latest digits with blank spaces?"
+
 			// display alarm status
 			LCD_Position(2, 11);
 			if (alarmEn) { LCD_Printf(0, " !!!"); }

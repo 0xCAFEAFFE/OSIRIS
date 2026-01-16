@@ -16,6 +16,7 @@
 #include "rad.h"
 #include "rtc.h"
 #include "uart.h"
+#include "ui.h"
 
 typedef enum
 {
@@ -91,6 +92,12 @@ void PWR_Shutdown(void)
 	// wait until shutdown message sent
 	UART_Printf("Shutdown..\n");
 	while (UART_TxBusy());
+	
+	// show shutdown message
+	LCD_Clear();
+	LCD_Printf(1, "Power off..");
+	UI_EmitBeep(100);
+	_delay_ms(1000);
 
 	// disable LCD
 	LCD_Clear();
