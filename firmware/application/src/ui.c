@@ -281,7 +281,7 @@ void UI_RenderLcd(void)
 			
 			break;
 		}
-		case UI_VIEW_TIME: // uptime
+		case UI_VIEW_TIME: // system time
 		{
 			LCD_Printf(1, "Time:");
 			LCD_Printf(2, "%02u:%02u:%02u",time.hours,time.mins,time.secs);
