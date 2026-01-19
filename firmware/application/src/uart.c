@@ -20,7 +20,7 @@ static volatile byte txBuffer[UART_TX_BUF_SIZE], rxBuffer[UART_RX_BUF_SIZE]; // 
 static volatile byte rxBufIn, rxBufOut, txBufIn, txBufOut;
 
 // internal function prototypes
-static void TxChar(byte in);
+static int UartPutChar(char c, FILE *stream);
 
 // UART0 initialization - use UART_Enable() to enable or disable RX & TX
 bool UART_Init(void)
@@ -74,15 +74,11 @@ void UART_Printf(const char *formatstr, ...)
 	uartBusy = true;
 	
 	// variadic sorcery
-	char buffer[UART_PRINT_BUF_SIZE] = {0};
 	va_list args;
 	va_start(args, formatstr);
-	vsnprintf(buffer, UART_PRINT_BUF_SIZE, formatstr, args);
+	static FILE uart_stream = FDEV_SETUP_STREAM(UartPutChar, NULL, _FDEV_SETUP_WRITE);
+	vfprintf(&uart_stream, formatstr, args);
 	va_end(args);
-
-	// copy chars to TX buffer
-	byte i=0;
-	while (buffer[i]) { TxChar(buffer[i++]); }
 
 	SET(UCSR0A, TXC0);		// clear transmit complete flag
 	SET(UCSR0B, UDRIE0);	// enable data register empty interrupt
@@ -202,10 +198,12 @@ bool UART_GetEnabled(void)
 }
 
 // write single char to TX buffer
-static void TxChar(byte in)
+static int UartPutChar(char c, FILE *stream)
 {
-	txBuffer[txBufIn++] = in;
+	(void)stream;
+	txBuffer[txBufIn++] = c;
 	txBufIn %= UART_TX_BUF_SIZE;	// wrap around
+	return 0;
 }
 
 // TX data empty interrupt

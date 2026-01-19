@@ -22,7 +22,7 @@
 
 // revision defines
 #define HW_REV	"2.0"
-#define FW_REV	"2.2"
+#define FW_REV	"2.21"
 
 // internal function prototypes
 static bool InitSystem(void);

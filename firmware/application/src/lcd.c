@@ -93,6 +93,14 @@ void LCD_Init(void)
 	LCD_Enable(true);
 }
 
+// wrapper for printf
+int LcdPutChar(char c, FILE *stream)
+{
+	(void)stream;
+	SendData(c);
+	return 0;
+}
+
 /*----------------------------
 Func: String
 Desc: Shows a String on the DOG-Display
@@ -106,13 +114,9 @@ void LCD_Printf(uint8_t line, const char *formatstr, ...)
 	// variadic sorcery
 	va_list args;
 	va_start(args, formatstr);
-	char buffer[LCD_COLUMNS+1] = {0};
-	vsnprintf(buffer, LCD_COLUMNS+1, formatstr, args);
+	static FILE lcd_stream = FDEV_SETUP_STREAM(LcdPutChar, NULL, _FDEV_SETUP_WRITE);
+	vfprintf(&lcd_stream, formatstr, args);
 	va_end(args);
-
-	// send data to LCD
-	char *str = buffer;
-	while (*str) { SendData(*str++); }
 }
 
 /*----------------------------
