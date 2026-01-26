@@ -5,3 +5,4 @@ firmware/application/OSIRIS_FW.map
 firmware/application/build/
 firmware/bootloader/OSIRIS_BL.hex
 firmware/bootloader/OSIRIS_BL.elf
+firmware/application/OSIRIS_FW.hex

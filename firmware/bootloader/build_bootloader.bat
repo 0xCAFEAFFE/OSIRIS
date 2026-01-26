@@ -1,6 +1,6 @@
 @echo off
 cd ./src
-avr-gcc -g -Wall -Os -fno-split-wide-types -mrelax -mmcu=atmega328pb -DF_CPU=8000000L -DBAUD_RATE=28800 -DLED=D3 -DLED_START_FLASHES=0 -DOPTIBOOT_CUSTOMVER=100 -Wl,-T"../link_optiboot.ld" -Wl,--relax -nostartfiles -I "../inc" optiboot.c -o "../OSIRIS_BL.elf"
+avr-gcc -g -Wall -Os -fno-split-wide-types -mrelax -mmcu=atmega328pb -DF_CPU=8000000L -DBAUD_RATE=28800 -DLED=D3 -DLED_START_FLASHES=0 -DOPTIBOOT_CUSTOMVER=100 -DCAFEAFFE -Wl,-T"../link_optiboot.ld" -Wl,--relax -nostartfiles -I "../inc" optiboot.c -o "../OSIRIS_BL.elf"
 avr-objcopy -j .text -j .data -j .version --set-section-flags .version=alloc,load -O ihex "../OSIRIS_BL.elf" "../OSIRIS_BL.hex"
 avr-objdump -Pmem-usage "../OSIRIS_BL.elf"
 pause

@@ -857,6 +857,7 @@ int main(void) {
 #endif
 #endif
 
+#if defined(CAFEAFFE)
 
 /*
     ############## mods by 0xCAFEAFFE ##############
@@ -906,6 +907,7 @@ else
     UART_SRL = BOOT_UBRR_DEFAULT;    // 28800bd default
 
 // ############## end of mods ################
+#endif
 
 #ifdef RS485
   RS485_DDR |= _BV(RS485_BIT);
